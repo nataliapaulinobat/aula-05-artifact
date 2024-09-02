@@ -93,3 +93,64 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: windows
+
+
+
+
+### 3. Adicionar o Código Go e o Script Shell
+Adicionar o arquivo hello-server.go com o código Go no repositório:
+package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+func main() {
+  http.HandleFunc("/", HelloServer)
+  http.ListenAndServe(":13000", nil)
+}
+
+func HelloServer(w http.ResponseWriter, r *http.Request) {
+  fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+###Adicionar Código Go e Script Shell
+package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+func main() {
+  http.HandleFunc("/", HelloServer)
+  http.ListenAndServe(":13000", nil)
+}
+
+func HelloServer(w http.ResponseWriter, r *http.Request) {
+  fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+###Adicione run.sh com o seguinte conteúdo:
+chmod +x ./hello-server
+
+./hello-server &
+
+sleep 5
+
+for LOGIN in Homer Bart Maggie; do
+  echo "$(date): $(curl -s http://localhost:13000/${LOGIN})"
+done
+
+####4.Comitar e Enviar as Alterações
+git add .github/workflows/go-example.yml hello-server.go run.sh
+git commit -m "Add GitHub Actions workflow with scheduler and new jobs"
+git push
+
+Verificar a Execução do Workflow
+
+Acesse a aba "Actions" no repositório GitHub.
+Revise o status e os logs dos jobs para garantir que a execução está correta.
+
+
