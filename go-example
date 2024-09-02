@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '*/15 * * * 1-6' # Execute a cada 15 minutos, de segunda a sábado
 
 env:
   FILE_NAME: hello-server
@@ -36,3 +38,32 @@ jobs:
         with:
           name: windows
           path: ${{ env.FILE_NAME }}.exe
+
+  download-and-run-linux:
+    needs: BuildGo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: linux
+
+      - name: Run Linux script
+        run: |
+          chmod +x ./run.sh
+          source ./run.sh
+
+  download-only-windows:
+    needs: BuildGo
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: windows
